@@ -27,7 +27,7 @@ class RailwayPrepApp extends StatelessWidget {
 }
 
 // रेलवे एग्जाम्स की क्रमवार सूची
-const List> railwayExams = [
+const List<Map<String, String>> railwayExams = [
   {
     'name': 'RRB Group D',
     'subtitle': 'लेवल 1 • गणित, रीजनिंग, सामान्य विज्ञान व सामान्य ज्ञान',
