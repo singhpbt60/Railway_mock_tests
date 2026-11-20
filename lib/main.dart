@@ -1622,7 +1622,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
           ),
         ),
       ),
-      // फ़ोन के तीन नेविगेशन बटन (Back / Home / Recent) से सुरक्षित दूरी के साथ तीनों टेस्ट बटन
       bottomNavigationBar: SafeArea(
         child: Container(
           color: const Color(0xFF151C2C),
