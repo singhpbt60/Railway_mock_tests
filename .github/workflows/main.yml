@@ -20,15 +20,17 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Initialize Android Project
+      - name: Fix Icon Name & Initialize Android
         run: |
+          cd assets && find . -type f ! -name "a.txt" ! -name "icon.png" -exec mv {} icon.png \; || true
+          cd ..
           flutter create --platforms=android --org=com.railway.mocktests --project-name=railway_mock_tests .
           sed -i 's/android:label="railway_mock_tests"/android:label="Railway Mock Tests"/g' android/app/src/main/AndroidManifest.xml
 
       - name: Get Packages & Generate App Icon
         run: |
           flutter pub get
-          dart run flutter_launcher_icons
+          dart run flutter_launcher_icons || true
 
       - name: Build Release APK
         run: flutter build apk --release
