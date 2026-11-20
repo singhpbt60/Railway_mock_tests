@@ -20,13 +20,126 @@ class RailwayPrepApp extends StatelessWidget {
           secondary: Colors.orangeAccent,
         ),
       ),
-      home: const MainNavigationScreen(),
+      home: const LoginScreen(),
     );
   }
 }
 
+// 1. लॉगिन और स्किप (Guest Mode) स्क्रीन
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+
+  void _goToHome(String userName) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MainNavigationScreen(userName: userName),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Skip Button (ऊपर दाईं तरफ)
+              Align(
+                alignment: Alignment.topRight,
+                child: TextButton.icon(
+                  onPressed: () => _goToHome('Student (Guest)'),
+                  icon: const Icon(Icons.arrow_forward, size: 18, color: Colors.orangeAccent),
+                  label: const Text(
+                    'Skip Login / बगैर लॉगिन के यूज़ करें',
+                    style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              const Icon(Icons.train, size: 70, color: Colors.blueAccent),
+              const SizedBox(height: 16),
+              const Text(
+                'Railway Mock Tests',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'अपनी रैंक और स्कोर सेव करने के लिए लॉगिन करें',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+              const SizedBox(height: 30),
+
+              // नाम बॉक्स
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'आपका नाम (Your Name)',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  filled: true,
+                  fillColor: const Color(0xFF1E2638),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // मोबाइल नंबर बॉक्स
+              TextField(
+                controller: _mobileController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'मोबाइल नंबर (Mobile Number)',
+                  prefixIcon: const Icon(Icons.phone_android),
+                  filled: true,
+                  fillColor: const Color(0xFF1E2638),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Login Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () {
+                  String name = _nameController.text.trim();
+                  _goToHome(name.isEmpty ? 'Student' : name);
+                },
+                child: const Text(
+                  'Login & Start Preparation',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 2. मुख्य नेविगेशन (Bottom Nav Bar के साथ)
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  final String userName;
+  const MainNavigationScreen({super.key, required this.userName});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -35,19 +148,19 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 1; // डिफ़ॉल्ट 'Tests' टैब खुला रहेगा
 
-  final List<Widget> _screens = [
-    const Center(child: Text('होम स्क्रीन (Home)', style: TextStyle(fontSize: 20))),
-    const TestsTabScreen(),
-    const Center(child: Text('मिनी मॉक टेस्ट (Mini Mock)', style: TextStyle(fontSize: 20))),
-    const Center(child: Text('फुल मॉक टेस्ट (Full Mock)', style: TextStyle(fontSize: 20))),
-    const Center(child: Text('सामान्य ज्ञान (GK)', style: TextStyle(fontSize: 20))),
-    const Center(child: Text('नया अपडेट (New)', style: TextStyle(fontSize: 20))),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      Center(child: Text('स्वागत है, ${widget.userName}!\n(Home Screen)', textAlign: TextAlign.center, style: const TextStyle(fontSize: 20))),
+      TestsTabScreen(userName: widget.userName),
+      const Center(child: Text('मिनी मॉक टेस्ट (Mini Mock)', style: TextStyle(fontSize: 20))),
+      const Center(child: Text('फुल मॉक टेस्ट (Full Mock)', style: TextStyle(fontSize: 20))),
+      const Center(child: Text('सामान्य ज्ञान (GK)', style: TextStyle(fontSize: 20))),
+      const Center(child: Text('नया अपडेट (New)', style: TextStyle(fontSize: 20))),
+    ];
+
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -86,18 +199,31 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
+// 3. 'Tests' (मॉक टेस्ट और ₹29 सब्सक्रिप्शन स्क्रीन)
 class TestsTabScreen extends StatelessWidget {
-  const TestsTabScreen({super.key});
+  final String userName;
+  const TestsTabScreen({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RAILWAY MOCK TESTS', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('RAILWAY MOCK TESTS', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+            Text('Hi, $userName', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          ],
+        ),
         backgroundColor: const Color(0xFF151C2C),
         elevation: 0,
         actions: [
-          IconButton(icon: const Icon(Icons.notifications_none), onPressed: () {}),
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+            },
+            child: const Text('Login', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+          ),
         ],
       ),
       body: SingleChildScrollView(
